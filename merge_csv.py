@@ -1,9 +1,9 @@
 import os
 import sys
 
-csv_file = ["data/Xsmall Files/file1.csv",
-            "data/Xsmall Files/file2.csv",
-            "data/Xsmall Files/file3.csv"]
+csv_file = ["data/file1.csv",
+            "data/file2.csv",
+            "data/file3.csv"]
 
 
 def csv_to_dict(csv):
