@@ -1,14 +1,14 @@
-csv_file = ["data/Small Files/file1.csv",
-            "data/Small Files/file2.csv",
-            "data/Small Files/file3.csv"]
+csv_file = ["data/Small Files/file1.csv_path",
+            "data/Small Files/file2.csv_path",
+            "data/Small Files/file3.csv_path"]
 
-csv_file_2 = ["data/Large Files/file1.csv",
-              "data/Large Files/file2.csv",
-              "data/Large Files/file3.csv"]
+csv_file_2 = ["data/Large Files/file1.csv_path",
+              "data/Large Files/file2.csv_path",
+              "data/Large Files/file3.csv_path"]
 
 
-def csv_to_dict(csv):
-    with open(csv) as f:
+def csv_to_dict(csv_path: str):
+    with open(csv_path) as f:
         csv_list = []
 
         for r in f.readlines():
@@ -38,8 +38,8 @@ def merger(paths: list):
     return merged_file
 
 
-def main():
-    merged_file = merger(allFilePaths)
+def main(file_name: str):
+    merged_file = merger(all_file_paths)
 
     header = ['id']
     first_entry = list(merged_file.values())[-1]
@@ -54,7 +54,7 @@ def main():
 
         merged_file_list.append(entry)
 
-    with open('merged_file.csv', 'w') as f:
+    with open(f'{file_name}.csv_path', 'w') as f:
         for line in merged_file_list:
             f.write("%s\n" % ','.join(line))
 
@@ -62,15 +62,17 @@ def main():
 if __name__ == "__main__":
     print("Welcome to the file merge program\n")
 
-    numberOfFiles = int(input("How many files would you like to merge?:\n"))
-    allFilePaths = []
+    number_of_files = int(input("How many files would you like to merge?:\n"))
+    all_file_paths = []
 
-    for num in range(numberOfFiles):
-        filePath = input(f"Enter the path for file {num + 1}:\n")
-        allFilePaths.append(filePath)
+    for num in range(number_of_files):
+        file_path = input(f"Enter the path for file {num + 1}:\n")
+        all_file_paths.append(file_path)
+
+    target_file_name = input("Enter a name for your file:\n")
 
     print("\nMerging!")
 
-    main()
+    main(target_file_name)
 
     print("\nDone!")
