@@ -1,9 +1,6 @@
-import os
-import sys
-
-csv_file = ["data/file1.csv",
-            "data/file2.csv",
-            "data/file3.csv"]
+csv_file = ["data/Small Files/file1.csv",
+            "data/Small Files/file2.csv",
+            "data/Small Files/file3.csv"]
 
 
 def csv_to_dict(csv):
@@ -25,14 +22,16 @@ def csv_to_dict(csv):
 
 
 def main(paths: list):
-    #######
-
     files = [csv_to_dict(path) for path in paths]
-    output_file = files[0]
+    merged_file = files[0]
+    other_files = files[1:]
 
-    return output_file
+    for file in other_files:
+        for id, column in file.items():
+            for key, value in column.items():
+                merged_file[id][key] = value
 
-    #####
+    return merged_file
     
 
 if __name__ == "__main__":
