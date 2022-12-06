@@ -1,13 +1,7 @@
-csv_file = ["data/Small Files/file1.csv_path",
-            "data/Small Files/file2.csv_path",
-            "data/Small Files/file3.csv_path"]
-
-csv_file_2 = ["data/Large Files/file1.csv_path",
-              "data/Large Files/file2.csv_path",
-              "data/Large Files/file3.csv_path"]
-
+import os
 
 def csv_to_dict(csv_path: str):
+    # opening file and converting to list
     with open(csv_path) as f:
         csv_list = []
 
@@ -15,6 +9,7 @@ def csv_to_dict(csv_path: str):
             entry = [val.strip('", \n') for val in r.split(",")]
             csv_list.append(entry)
 
+    # creating a dictionary from the list using first column (id) as key
     csv_dict = {}
     (_, *header), *data = csv_list
 
@@ -26,6 +21,7 @@ def csv_to_dict(csv_path: str):
 
 
 def merger(paths: list):
+    # saving dictionaries to a list
     files = [csv_to_dict(path) for path in paths]
     merged_file = files[0]
     other_files = files[1:]
@@ -41,10 +37,13 @@ def merger(paths: list):
 def main(file_name: str):
     merged_file = merger(all_file_paths)
 
+    # creating file header for csv
+    # saving first column as id
     header = ['id']
     first_entry = list(merged_file.values())[-1]
     header.extend(list(first_entry.keys()))
 
+    # adding header as the row in the list
     merged_file_list = [header]
 
     for key, value in merged_file.items():
@@ -54,19 +53,33 @@ def main(file_name: str):
 
         merged_file_list.append(entry)
 
-    with open(f'{file_name}.csv_path', 'w') as f:
+    # exporting final file
+    with open(f'{file_name}.csv', 'w') as f:
         for line in merged_file_list:
             f.write("%s\n" % ','.join(line))
 
+    return
+
+    
+
 
 if __name__ == "__main__":
+    # starting program
     print("Welcome to the file merge program\n")
 
+    # getting number of files to be merged
+    # no merging if file number is less than 2
     number_of_files = int(input("How many files would you like to merge?:\n"))
-    all_file_paths = []
+    if number_of_files <= 1:
+        raise Exception("Sorry, you need at least 2 files to merge")
 
+    all_file_paths = []
     for num in range(number_of_files):
+        # confirm the path to ensure file exists
         file_path = input(f"Enter the path for file {num + 1}:\n")
+        if not os.path.exists(file_path):
+            raise FileNotFoundError("Sorry, recheck the file path")
+
         all_file_paths.append(file_path)
 
     target_file_name = input("Enter a name for your file:\n")
