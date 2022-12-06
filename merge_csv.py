@@ -2,16 +2,20 @@ csv_file = ["data/Small Files/file1.csv",
             "data/Small Files/file2.csv",
             "data/Small Files/file3.csv"]
 
+csv_file_2 = ["data/Large Files/file1.csv",
+              "data/Large Files/file2.csv",
+              "data/Large Files/file3.csv"]
+
 
 def csv_to_dict(csv):
     with open(csv) as f:
         csv_list = []
-        csv_dict = {}
 
         for r in f.readlines():
             entry = [val.strip('", \n') for val in r.split(",")]
             csv_list.append(entry)
 
+    csv_dict = {}
     (_, *header), *data = csv_list
 
     for row in data:
@@ -21,7 +25,7 @@ def csv_to_dict(csv):
     return csv_dict
 
 
-def main(paths: list):
+def merger(paths: list):
     files = [csv_to_dict(path) for path in paths]
     merged_file = files[0]
     other_files = files[1:]
@@ -32,7 +36,28 @@ def main(paths: list):
                 merged_file[id][key] = value
 
     return merged_file
-    
+
+
+def main():
+    merged_file = merger(allFilePaths)
+
+    header = ['id']
+    first_entry = list(merged_file.values())[-1]
+    header.extend(list(first_entry.keys()))
+
+    merged_file_list = [header]
+
+    for key, value in merged_file.items():
+        entry = [key]
+        other_entries = [value for key, value in value.items()]
+        entry.extend(other_entries)
+
+        merged_file_list.append(entry)
+
+    with open('merged_file.csv', 'w') as f:
+        for line in merged_file_list:
+            f.write("%s\n" % ','.join(line))
+
 
 if __name__ == "__main__":
     print("Welcome to the file merge program\n")
@@ -46,6 +71,6 @@ if __name__ == "__main__":
 
     print("\nMerging!")
 
-    print(main(allFilePaths))
+    main()
 
     print("\nDone!")
