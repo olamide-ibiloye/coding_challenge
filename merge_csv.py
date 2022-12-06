@@ -23,6 +23,7 @@ def csv_to_dict(csv_path: str):
 def merger(paths: list):
     # saving dictionaries to a list
     files = [csv_to_dict(path) for path in paths]
+    # using first file as the starting file
     merged_file = files[0]
     other_files = files[1:]
 
@@ -48,7 +49,7 @@ def main(file_name: str):
 
     for key, value in merged_file.items():
         entry = [key]
-        other_entries = [value for key, value in value.items()]
+        other_entries = [value if value != "" else "NA" for key, value in value.items()]
         entry.extend(other_entries)
 
         merged_file_list.append(entry)
@@ -59,8 +60,6 @@ def main(file_name: str):
             f.write("%s\n" % ','.join(line))
 
     return
-
-    
 
 
 if __name__ == "__main__":
