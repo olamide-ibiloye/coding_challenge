@@ -8,14 +8,9 @@ How to use
 - Enter the unique file path for all the files
 - Check the current working directory for the merged_file
 
-
-
 Observations
 - The file3 of the large files have 3 missing values 
 (file1 -> 500000 entries, file2 -> 499997, file3 -> 500000)
-
-
-
 
 Assumptions
 - All the entries have unique ids
