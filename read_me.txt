@@ -1,4 +1,6 @@
-Python version -- 3.11
+Requirements
+- Python version -- 3.11
+- python module 'os'
 
 How to use
 - User can merge as many files as they want
