@@ -13,6 +13,7 @@ Observations
 (file1 -> 500000 entries, file2 -> 499997, file3 -> 500000)
 
 Assumptions
-- All the entries have unique ids
+- All the entries in a file have unique ids
+- ids are uniform across files
 - All files have their first column as id column
 - All files have headers
