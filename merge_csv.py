@@ -1,22 +1,17 @@
 import os
 
 def csv_to_dict(csv_path: str):
-    # opening file and converting to list
-    csv_list = []
+    # opening file and creating a dictionary 
+    # using first column (id) as key
+    csv_dict = {}
     
     with open(csv_path) as f:
 
         for r in f.readlines():
             entry = [val.strip('", \n') for val in r.split(",")]
-            csv_list.append(entry)
-
-    # creating a dictionary from the list using first column (id) as key
-    csv_dict = {}
-
-    for row in csv_list:
-        key, *values = row
-        csv_dict[key] = [value for value in values]
-
+            key, *values = entry
+            csv_dict[key] = [value for value in values]
+    
     return csv_dict
 
 
@@ -31,6 +26,7 @@ def merger(paths: list):
     for file in other_files:
         for id, column in file.items():
             for value in column:
+                
                 if id in merged_file.keys():
                     merged_file[id].append(value)
                 else:
@@ -38,9 +34,10 @@ def merger(paths: list):
                     # to know the number of 'NA's to be added before the new entry
                     max_row_key = max(merged_file, key= lambda x: merged_file[x])
                     max_row_value = merged_file[max_row_key]
+                    num_of_blanks = len(max_row_value) - len(column)
                     # create the id, fill the existing blanks with 'NA'
                     # then add the new entries
-                    merged_file[id] = ['NA' for idx in range(len(max_row_value))]
+                    merged_file[id] = ['NA' for idx in range(num_of_blanks)]
                     merged_file[id].append(value)
 
         # taking care of any missing values
