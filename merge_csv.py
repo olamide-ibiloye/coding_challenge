@@ -2,8 +2,9 @@ import os
 
 def csv_to_dict(csv_path: str):
     # opening file and converting to list
+    csv_list = []
+    
     with open(csv_path) as f:
-        csv_list = []
 
         for r in f.readlines():
             entry = [val.strip('", \n') for val in r.split(",")]
@@ -33,16 +34,14 @@ def merger(paths: list):
                 if id in merged_file.keys():
                     merged_file[id].append(value)
                 else:
-                    # create the id, fill the existing blanks with 'NA'
-                    # then add the new entries
-                    merged_file[id] = []
                     # choosing a row with no missing value & getting the length
                     # to know the number of 'NA's to be added before the new entry
-                    max_key = max(merged_file, key= lambda x: merged_file[x])
-                    max_value = merged_file[max_key]
-            
-                    for i in range(len(max_value)):
-                        merged_file[id].append('NA')
+                    max_row_key = max(merged_file, key= lambda x: merged_file[x])
+                    max_row_value = merged_file[max_row_key]
+                    # create the id, fill the existing blanks with 'NA'
+                    # then add the new entries
+                    merged_file[id] = ['NA' for idx in range(len(max_row_value))]
+                    merged_file[id].append(value)
 
         # taking care of any missing values
         # replacing with 'NA'
