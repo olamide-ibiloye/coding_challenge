@@ -13,10 +13,9 @@ def csv_to_dict(csv_path: str):
         id_m : {col_1: val_1, ... col_n: val_n}
     }
     '''
-
     # opening file and reading into a list
     with open(csv_path) as f:
-        csv_list = [[val.strip() for val in r.split(",")]
+        csv_list = [[val.strip('", \n') for val in r.split(",")]
                     for r in f.readlines()]
 
     (_, *header), *data = csv_list
@@ -34,7 +33,6 @@ def csv_to_dict(csv_path: str):
 
 
 
-
 def merger(paths: list):
     ''' (list of directories) -> dictionary
 
@@ -48,7 +46,6 @@ def merger(paths: list):
         id_m : {col_1: val_1, ... col_n: val_n}
     }
     '''
-
     # converting all paths to dictionary using csv_to_dict function
     # effectively managed using list
     files = [csv_to_dict(path) for path in paths]
@@ -76,7 +73,7 @@ def merger(paths: list):
                     # for new ids, creating a new entry for it
                     # creating 'NAs' to fill blanks
                     # by tracking the number of columns already in existence
-                    merged_file[id] = {key: 'NA' for key in columns.keys()}
+                    merged_file[id] = {key: "NA" for key in columns.keys()}
                     merged_file[id].update([(key, value)])
 
         # taking care of any missing values
@@ -84,10 +81,9 @@ def merger(paths: list):
         # filling with 'NA'
         for id in merged_file.keys():
             if id not in file.keys():
-                merged_file[id].update([(key, 'NA')])
+                merged_file[id].update([(key, "NA")])
 
     return merged_file
-
 
 
 
@@ -97,30 +93,22 @@ def main(file_name: str):
     Return a csv file of the merged document in the working directory
 
     >> main(['my_file_name'])
-    
-    '''
 
+    '''
     # saving the final merged file
     merged_file = merger(all_file_paths)
-    # building header with the first as the id
-    # getting other column names and adding to header
-    header = ['id']
+
+    # getting headers from the first value
     first_key = list(merged_file.keys())[0]
     first_key_value = merged_file[first_key]
-    header.extend(first_key_value.keys())
-    # final merged file in list format starts with the header
-    merged_file_list = [header]
-
-    # creating a list comprising of id and other columns
-    for key, value in merged_file.items():
-        row = [key]
-        row.extend(value.values())
-        merged_file_list.append(row)
 
     # exporting final file
     with open(f'{file_name}.csv', 'w') as f:
-        for line in merged_file_list:
-            f.write("%s\n" % ','.join(line))
+        # including id as the first element
+        f.write("id,%s\n" % ','.join(first_key_value.keys()))
+        for row in merged_file:
+            f.write(f"{row},%s\n" % ','.join(str(x) for x in merged_file[row].values()))
+
 
 
 if __name__ == "__main__":
