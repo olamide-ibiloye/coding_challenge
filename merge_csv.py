@@ -1,6 +1,19 @@
 import os
 
 def csv_to_dict(csv_path: str):
+    ''' (directory) -> dictionary
+
+    Return a dictionary, where the keys are the ids and
+    the values are dictionaries of column name and values
+
+    >> csv_to_dict('./my_file.csv')
+    {
+        id_1 : {col_1: val_1, ... col_n: val_n},
+        ...
+        id_m : {col_1: val_1, ... col_n: val_n}
+    }
+    '''
+
     # opening file and reading into a list
     with open(csv_path) as f:
         csv_list = [[val.strip() for val in r.split(",")]
@@ -12,6 +25,7 @@ def csv_to_dict(csv_path: str):
     # dictionary prevents duplicate entries, since ids and column names are unique
     # using the first column (id) as key 
     csv_dict = {}
+
     for row in data:
         key, *values = row
         csv_dict[key] = {key: value for key, value in zip(header, values)}
@@ -19,7 +33,22 @@ def csv_to_dict(csv_path: str):
     return csv_dict
 
 
+
+
 def merger(paths: list):
+    ''' (list of directories) -> dictionary
+
+    Return a merged dictionary of all directories provided, where the keys are the ids and
+    the values are dictionaries of column name and values
+
+    >> merger(['./my_file_1.csv', ... , './my_file_n.csv'])
+    {
+        id_1 : {col_1: val_1, ... col_n: val_n},
+        ...
+        id_m : {col_1: val_1, ... col_n: val_n}
+    }
+    '''
+
     # converting all paths to dictionary using csv_to_dict function
     # effectively managed using list
     files = [csv_to_dict(path) for path in paths]
@@ -60,7 +89,17 @@ def merger(paths: list):
     return merged_file
 
 
+
+
 def main(file_name: str):
+    ''' ('desired_file_name')
+
+    Return a csv file of the merged document in the working directory
+
+    >> main(['my_file_name'])
+    
+    '''
+
     # saving the final merged file
     merged_file = merger(all_file_paths)
     # building header with the first as the id
