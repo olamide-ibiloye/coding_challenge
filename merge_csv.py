@@ -1,62 +1,81 @@
 import os
 
 def csv_to_dict(csv_path: str):
-    # opening file and creating a dictionary 
-    # using first column (id) as key
-    csv_dict = {}
-    
+    # opening file and reading into a list
     with open(csv_path) as f:
+        csv_list = [[val.strip() for val in r.split(",")]
+                    for r in f.readlines()]
 
-        for r in f.readlines():
-            entry = [val.strip('", \n') for val in r.split(",")]
-            key, *values = entry
-            csv_dict[key] = [value for value in values]
-    
+    (_, *header), *data = csv_list
+
+    # creating dictionary as it is the most effective way to hold the data
+    # dictionary prevents duplicate entries, since ids and column names are unique
+    # using the first column (id) as key 
+    csv_dict = {}
+    for row in data:
+        key, *values = row
+        csv_dict[key] = {key: value for key, value in zip(header, values)}
+
     return csv_dict
 
 
 def merger(paths: list):
-    # saving dictionaries to a list
+    # converting all paths to dictionary using csv_to_dict function
+    # effectively managed using list
     files = [csv_to_dict(path) for path in paths]
 
     # using first file as the starting file
+    # in other words, implementing left join
     merged_file = files[0]
     other_files = files[1:]
 
+    # getting column names
+    columns = list(merged_file.values())[0]
+
+    # iterating through file_2 onward
     for file in other_files:
-        for id, column in file.items():
-            for value in column:
-                
+        # columns in the current file
+        cols = list(file.values())[0]
+        # updating number of columns
+        columns.update(cols)
+        for id, row in file.items():
+            for key, value in row.items():
+                # if id already exists in the current merged file then update
                 if id in merged_file.keys():
-                    merged_file[id].append(value)
+                    merged_file[id].update([(key, value)])
                 else:
-                    # choosing a row with no missing value & getting the length
-                    # to know the number of 'NA's to be added before the new entry
-                    max_row_key = max(merged_file, key= lambda x: merged_file[x])
-                    max_row_value = merged_file[max_row_key]
-                    num_of_blanks = len(max_row_value) - len(column)
-                    # create the id, fill the existing blanks with 'NA'
-                    # then add the new entries
-                    merged_file[id] = ['NA' for idx in range(num_of_blanks)]
-                    merged_file[id].append(value)
+                    # for new ids, creating a new entry for it
+                    # creating 'NAs' to fill blanks
+                    # by tracking the number of columns already in existence
+                    merged_file[id] = {key: 'NA' for key in columns.keys()}
+                    merged_file[id].update([(key, value)])
 
         # taking care of any missing values
-        # replacing with 'NA'
-        for id, column in merged_file.items():
+        # tracking ids with no record in the current file
+        # filling with 'NA'
+        for id in merged_file.keys():
             if id not in file.keys():
-                merged_file[id].append('NA')
+                merged_file[id].update([(key, 'NA')])
 
     return merged_file
 
 
 def main(file_name: str):
+    # saving the final merged file
     merged_file = merger(all_file_paths)
-    merged_file_list = []
+    # building header with the first as the id
+    # getting other column names and adding to header
+    header = ['id']
+    first_key = list(merged_file.keys())[0]
+    first_key_value = merged_file[first_key]
+    header.extend(first_key_value.keys())
+    # final merged file in list format starts with the header
+    merged_file_list = [header]
 
     # creating a list comprising of id and other columns
     for key, value in merged_file.items():
         row = [key]
-        row.extend(value)
+        row.extend(value.values())
         merged_file_list.append(row)
 
     # exporting final file
@@ -93,6 +112,6 @@ if __name__ == "__main__":
         main(target_file_name)
 
         print("\nDone!")
-    
+        
     except Exception as e:
         print(e)
